@@ -1,0 +1,116 @@
+package CompCode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+
+@TeleOp(name="Lift Debug")
+//@Disabled
+public class LiftDebug extends LinearOpMode {
+
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+    TELEmap robot   = new TELEmap();
+
+    ElapsedTime toggle = new ElapsedTime(); //STOP
+
+    @Override
+    public void runOpMode() {
+
+        robot.init(hardwareMap);
+
+        // Initialize the hardware variables
+      
+        robot.larm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+     
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+        runtime.reset();
+        START_POS();
+
+        // run until the end of the match (driver presses STOP)
+        while (opModeIsActive()) {
+
+         
+
+          
+            if (gamepad1.dpad_up) {
+                HIGH();
+            } else if (gamepad1.dpad_left) {
+                MID();
+            } else if (gamepad1.dpad_down) {
+                LOW();
+            } else if (gamepad2.dpad_right) {
+                GROUND();
+            } 
+
+        
+
+        }
+    }
+
+
+    //TODO: THIS IS THE LIFT METHOD CONTAINING YOUR PID INFO
+    public void lift(double counts) { 
+        int newTarget;
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+            // Determine new target position, and pass to motor controller
+            newTarget = (int) counts;
+            //inches *
+            robot.larm.setTargetPosition(newTarget);
+            robot.rarm.setTargetPosition(newTarget);
+
+            // Turn On RUN_TO_POSITION
+            robot.larm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rarm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            robot.larm.setPower(Math.abs(-1)); //left arm positive
+            robot.rarm.setPower(Math.abs(1)); //right arm negative
+
+            while (opModeIsActive()
+                    //&& (runtime.seconds() < timeoutS)
+                    &&
+                    (robot.larm.isBusy())) {
+                // Display it for the driver.
+                telemetry.addData("Path1", "Running to %7d :%7d");
+                telemetry.addData("Path2", "Running at %7d :%7d");
+                telemetry.update();
+                drive();
+            }
+        }
+    }
+
+   
+//TODO: CHANGE LIFT NUMBERS HERE
+  
+    public void START_POS(){ //initialization position, delete all references of this above if you dont need the lift to move
+        lift(230);
+    }
+
+    public void LOW(){
+        lift(1208);
+    }
+
+    public void MID(){
+        lift(2078);
+    }
+
+    public void HIGH(){
+        lift(2900);
+    }
+
+    public void GROUND(){ //number may not actually be zero, 
+        lift(0);         //"zero" position resets depending on how your lift started before starting the program
+    }
+
+}
