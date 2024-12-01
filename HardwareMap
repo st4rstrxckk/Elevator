@@ -1,53 +1,93 @@
 package pidNonsense;
 
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class TESTmap
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class TELEmap
 {
     /* Public OpMode members. */
-  
-    public DcMotor larm = null;
-    public DcMotor rarm = null;
+    public DcMotorEx larm = null;
+    public DcMotorEx rarm = null;
 
 
-    /* local OpMode members. */
+
+
+   // public static double p = 0.007, i = 0, d = 0; // d = dampener (dampens arm movement and is scary). ignore i
+   // public static double f = 0.0002;  // prevents arm from falling from gravity
+  // public static PIDFCoefficients Elevator_PID = new PIDFCoefficients(.035,0,0,.27);
+
+    public WebcamName phoneCam;
+
+    DistanceSensor sensorDistance;
+
+
+    private VoltageSensor batteryVoltageSensor;
+    private List<DcMotorEx> motors;
+
+
+            /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
 
     /* Constructor */
-    public TESTmap(){
+    public TELEmap(){
 
     }
+    public void setPIDFCoefficients(DcMotor.RunMode runMode, PIDFCoefficients coefficients) {
+        PIDFCoefficients compensatedCoefficients = new PIDFCoefficients(
+                .008,0,0,.06
+        );
 
+        larm.setPIDFCoefficients(runMode, compensatedCoefficients);
+        for (DcMotorEx motor : motors) {
+            motor.setPIDFCoefficients(runMode, compensatedCoefficients);
+        }
+    }
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
         // Save reference to Hardware map
         hwMap = ahwMap;
 
 
-        // Define and Initialize Motors
-      
-        larm  = hwMap.get(DcMotor.class, "la"); //0 ex
-        rarm = hwMap.get(DcMotor.class, "ra");
-      
-        larm.setDirection(DcMotor.Direction.REVERSE);
-        rarm.setDirection(DcMotor.Direction.FORWARD);
+        batteryVoltageSensor = hwMap.voltageSensor.iterator().next();
 
-        rarm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // Define and Initialize Motors
+
+        larm  = hwMap.get(DcMotorEx.class, "la"); //0 ex
+        rarm = hwMap.get(DcMotorEx.class, "ra");
+
+        motors =  Arrays.asList(larm, rarm );
+
+        larm.setDirection(DcMotor.Direction.FORWARD);
+        rarm.setDirection(DcMotor.Direction.REVERSE);
+
+
         larm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rarm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         larm.setPower(0);
         rarm.setPower(0);
-   
+
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-       
+        
         larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Define and initialize ALL installed servos.
 
 
     }
