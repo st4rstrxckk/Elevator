@@ -1,0 +1,54 @@
+package pidNonsense;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+public class TESTmap
+{
+    /* Public OpMode members. */
+  
+    public DcMotor larm = null;
+    public DcMotor rarm = null;
+
+
+    /* local OpMode members. */
+    HardwareMap hwMap           =  null;
+    private ElapsedTime period  = new ElapsedTime();
+
+    /* Constructor */
+    public TESTmap(){
+
+    }
+
+    /* Initialize standard Hardware interfaces */
+    public void init(HardwareMap ahwMap) {
+        // Save reference to Hardware map
+        hwMap = ahwMap;
+
+
+        // Define and Initialize Motors
+      
+        larm  = hwMap.get(DcMotor.class, "la"); //0 ex
+        rarm = hwMap.get(DcMotor.class, "ra");
+      
+        larm.setDirection(DcMotor.Direction.REVERSE);
+        rarm.setDirection(DcMotor.Direction.FORWARD);
+
+        rarm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        larm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        larm.setPower(0);
+        rarm.setPower(0);
+   
+        // Set all motors to run without encoders.
+        // May want to use RUN_USING_ENCODERS if encoders are installed.
+       
+        larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+    }
+}
