@@ -8,6 +8,17 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+
+//THIS IS A CONFIG FILE use this to tune the lift !!
+//1. set everything to 0
+//2. initialize and see if moving the motor returns values in the dashboard graphs
+//3. set a number for the target position (preferable when you raise the lift a little bit for testing purposes)
+//   EX: low = 600 ticks or high = 2000 ticks ; it depends on the motor you are using, dont break anything >:P
+//4. adjust f, it helps the lift fight gravity without using torque
+//5. slowly raise p, it adjusts the accuracy of the motor when running to a position, the lift will move to the target on its own when number increases
+
+
+
 @Config
 @TeleOp (group = "tests") //ONE MOTOR LIFT
 public class PIDF_1Lift extends OpMode {
